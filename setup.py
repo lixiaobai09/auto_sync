@@ -11,7 +11,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "auto_sync=main:main",
+            "auto_sync=auto_sync.main:main",
         ],
     },
     python_requires=">=3.6",

@@ -44,7 +44,7 @@ class RsyncSynchronizer:
         try:
             # Execute rsync command
             process = subprocess.Popen(
-                rsync_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                rsync_cmd, stderr=subprocess.PIPE, text=True
             )
 
             # Get output
