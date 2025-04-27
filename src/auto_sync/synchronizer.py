@@ -43,17 +43,22 @@ class RsyncSynchronizer:
 
         try:
             # Execute rsync command
-            process = subprocess.Popen(
-                rsync_cmd, stderr=subprocess.PIPE, text=True
-            )
+            process = subprocess.Popen(rsync_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             # Get output
-            stdout, stderr = process.communicate()
+            # print stdout in real-time
+            self.logger.debug("Rsync output:")
+            while True:
+                output = process.stdout.readline()
+                if output == b"" and process.poll() is not None:
+                    break
+                if output:
+                    self.logger.debug(output.strip().decode())
+            _, stderr = process.communicate()
 
             # Check if command was successful
             if process.returncode == 0:
                 self.logger.info(f"Sync successful from {src_path} to {dst_path}")
-                self.logger.debug(f"Rsync output: {stdout}")
                 return True
             else:
                 self.logger.error(f"Sync failed with error code {process.returncode}")

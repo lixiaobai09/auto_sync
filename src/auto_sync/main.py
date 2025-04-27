@@ -21,8 +21,8 @@ def parse_arguments():
     parser.add_argument(
         "-c",
         "--config",
-        default="config/sync_config.yml",
-        help="Path to configuration file (default: config/sync_config.yml)",
+        default=None,
+        help="Path to configuration file (e.g. config/sync_config.yml)",
     )
     parser.add_argument(
         "-l",
@@ -37,7 +37,7 @@ def parse_arguments():
         help="Sync once and exit without watching for changes",
     )
 
-    return parser.parse_args()
+    return parser, parser.parse_args()
 
 
 def signal_handler(sig, frame):
@@ -55,7 +55,20 @@ def signal_handler(sig, frame):
 
 def main():
     """Main function to start the auto sync process."""
-    args = parse_arguments()
+    parser, args = parse_arguments()
+
+    if (args.config is None):
+        parser.print_help()
+        sys.exit(1)
+    # if args.log is not None, create log file
+    if args.log is not None:
+        args.log = os.path.abspath(args.log)
+        log_dir = os.path.dirname(args.log)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+        if not os.access(log_dir, os.W_OK):
+            print(f"Log directory {log_dir} is not writable")
+            sys.exit(1)
 
     # Setup logger
     global logger
